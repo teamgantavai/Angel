@@ -1,5 +1,5 @@
-import React, { createContext, useContext, useState, ReactNode } from "react";
 import { useColorScheme as useDeviceColorScheme } from "@/hooks/useColorScheme";
+import { createContext, ReactNode, useContext, useState } from "react";
 
 export interface UserProfile {
   id: string;
@@ -33,11 +33,11 @@ export interface ProfileContextValue {
 
 // Default initial user data for the session
 const INITIAL_PROFILE: UserProfile = {
-  id: "user_prod_001",
-  fullName: "Your Name",
-  username: "@yourname",
-  phone: "0000-0000-0000",
-  email: "youremail@email.com",
+  id: "a54d54sd",
+  fullName: "Dilkhush Jha",
+  username: "@dilkhush",
+  phone: "6205409820",
+  email: "official.diljha@gmail.com",
   avatarUri: null,
   followersCount: 10240,
   followingCount: 142,
