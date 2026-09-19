@@ -1,7 +1,9 @@
+import { Colors } from "@/components/constants/colors";
 import BasicNavigationBar, {
   NavigationTab,
 } from "@/components/navigation/BasicNavigationBar";
-import { useColorScheme } from "@/hooks/useColorScheme";
+import ProfileSection from "@/components/profile/ProfileSection";
+import { useProfile } from "@/context/ProfileContext";
 import { useState } from "react";
 import { StatusBar, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -21,7 +23,7 @@ const TAB_DATA: Record<
     tag: "Connections",
   },
   search: {
-    title: "Search",
+    title: "Dhruv",
     desc: "Explore trending topics, people, and community channels.",
     tag: "Explore",
   },
@@ -38,68 +40,79 @@ const TAB_DATA: Record<
 };
 
 export default function Index() {
-  const [currentTab, setCurrentTab] = useState<NavigationTab>("home");
-  const colorScheme = useColorScheme();
+  const [currentTab, setCurrentTab] = useState<NavigationTab>("profile");
   const insets = useSafeAreaInsets();
-  const isDark = colorScheme === "dark";
+  const { isDark } = useProfile();
+  const theme = isDark ? Colors.dark : Colors.light;
 
+  const isProfileTab = currentTab === "profile";
   const tabInfo = TAB_DATA[currentTab];
-  const bg = isDark ? "#0F0F0F" : "#FFFFFF";
-  const textColor = isDark ? "#FFFFFF" : "#0F0F0F";
-  const subtextColor = isDark ? "#AAAAAA" : "#606060";
-  const cardBg = isDark ? "#181818" : "#F8F9FA";
-  const cardBorder = isDark ? "#2A2A2A" : "#EEEEEE";
 
   return (
     <View
       style={[
         styles.container,
         {
-          backgroundColor: bg,
+          backgroundColor: theme.background,
           paddingTop: insets.top,
           paddingBottom: 0,
         },
       ]}>
       <StatusBar barStyle={isDark ? "light-content" : "dark-content"} />
 
-      {/* Clean Top Header (like YouTube / Instagram) */}
-      <View style={styles.header}>
-        <Text style={[styles.brand, { color: textColor }]}>Angel</Text>
+      {/* Clean Top Header (Shown on other tabs, Profile has its own header) */}
+      {!isProfileTab && (
         <View
           style={[
-            styles.badge,
-            { backgroundColor: isDark ? "#262626" : "#F0F0F0" },
-          ]}>
-          <Text style={[styles.badgeText, { color: textColor }]}>
-            {tabInfo.tag}
-          </Text>
-        </View>
-      </View>
-
-      {/* Screen Body */}
-      <View style={styles.content}>
-        <View
-          style={[
-            styles.card,
+            styles.header,
             {
-              backgroundColor: cardBg,
-              borderColor: cardBorder,
+              borderBottomColor: theme.divider,
             },
           ]}>
-          <Text style={[styles.cardTitle, { color: textColor }]}>
-            {tabInfo.title}
-          </Text>
-          <Text style={[styles.cardDesc, { color: subtextColor }]}>
-            {tabInfo.desc}
-          </Text>
+          <Text style={[styles.brand, { color: theme.text }]}>Angel</Text>
+          <View
+            style={[
+              styles.badge,
+              { backgroundColor: theme.surfaceElevated },
+            ]}>
+            <Text style={[styles.badgeText, { color: theme.text }]}>
+              {tabInfo.tag}
+            </Text>
+          </View>
         </View>
-      </View>
+      )}
+
+      {/* Screen Body */}
+      {isProfileTab ? (
+        <View style={styles.profileContainer}>
+          <ProfileSection />
+        </View>
+      ) : (
+        <View style={styles.content}>
+          <View
+            style={[
+              styles.card,
+              {
+                backgroundColor: theme.surface,
+                borderColor: theme.border,
+              },
+            ]}>
+            <Text style={[styles.cardTitle, { color: theme.text }]}>
+              {tabInfo.title}
+            </Text>
+            <Text style={[styles.cardDesc, { color: theme.textSecondary }]}>
+              {tabInfo.desc}
+            </Text>
+          </View>
+        </View>
+      )}
 
       {/* Bottom Navigation Bar */}
       <BasicNavigationBar
         selectedTab={currentTab}
         onTabChange={setCurrentTab}
         showLabels={true}
+        isDark={isDark}
       />
     </View>
   );
@@ -107,6 +120,9 @@ export default function Index() {
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
+  },
+  profileContainer: {
     flex: 1,
   },
   header: {

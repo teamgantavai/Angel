@@ -17,6 +17,7 @@ export interface BasicNavigationBarProps {
   selectedTab?: NavigationTab;
   onTabChange?: (tab: NavigationTab) => void;
   showLabels?: boolean;
+  isDark?: boolean;
 }
 
 type IoniconName = keyof typeof Ionicons.glyphMap;
@@ -59,7 +60,7 @@ const NAV_ITEMS: NavItemConfig[] = [
  * Exact Instagram Home Icon (Fixed Full Stroke):
  * Maintains consistent stroke outline geometry without transforming into a solid block.
  */
-function InstagramHomeIcon({
+function ExactInstagramHomeIcon({
   size = 25,
   color = "#000000",
   active = false,
@@ -68,12 +69,12 @@ function InstagramHomeIcon({
   color?: string;
   active?: boolean;
 }) {
-  const strokeWidth = active ? 2.8 : 2.0;
+  const strokeWidth = active ? 2.5 : 2;
 
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <Path
-        d="M3.5 11.2 12 3.5l8.5 7.7V20a1.5 1.5 0 0 1-1.5 1.5h-4a1 1 0 0 1-1-1v-4.5a2 2 0 0 0-4 0V20a1 1 0 0 1-1 1H5A1.5 1.5 0 0 1 3.5 20v-8.8z"
+        d="M3 10.182V20a1 1 0 0 0 1 1h5a1 1 0 0 0 1-1v-4.5a1.5 1.5 0 0 1 1.5-1.5h1a1.5 1.5 0 0 1 1.5 1.5V20a1 1 0 0 0 1 1h5a1 1 0 0 0 1-1V10.182a1 1 0 0 0-.356-.763l-8-6.857a1 1 0 0 0-1.288 0l-8 6.857A1 1 0 0 0 3 10.182z"
         stroke={color}
         strokeWidth={strokeWidth}
         strokeLinecap="round"
@@ -115,12 +116,14 @@ export default function BasicNavigationBar({
   selectedTab: controlledTab,
   onTabChange,
   showLabels = true,
+  isDark: isDarkProp,
 }: BasicNavigationBarProps = {}) {
   const [internalTab, setInternalTab] = useState<NavigationTab>("home");
   const activeTab = controlledTab ?? internalTab;
   const insets = useSafeAreaInsets();
-  const colorScheme = useColorScheme();
-  const isDark = colorScheme === "dark";
+  const deviceColorScheme = useColorScheme();
+  const isDark =
+    isDarkProp !== undefined ? isDarkProp : deviceColorScheme === "dark";
 
   const handleSelect = (tab: NavigationTab) => {
     if (controlledTab === undefined) {
@@ -162,7 +165,7 @@ export default function BasicNavigationBar({
             onPress={() => handleSelect(item.id)}>
             <View style={styles.iconWrapper}>
               {item.id === "home" ? (
-                <InstagramHomeIcon
+                <ExactInstagramHomeIcon
                   size={25}
                   color={color}
                   active={isActive}
@@ -179,6 +182,24 @@ export default function BasicNavigationBar({
                   size={25}
                   color={color}
                 />
+              )}
+
+              {/* Small music icon on top of partner */}
+              {item.id === "partner" && (
+                <View
+                  style={[
+                    styles.musicBadge,
+                    {
+                      backgroundColor: isDark ? "#222222" : "#F3F4F6",
+                      borderColor: barBg,
+                    },
+                  ]}>
+                  <Ionicons
+                    name="musical-note"
+                    size={9}
+                    color={isActive ? activeColor : inactiveColor}
+                  />
+                </View>
               )}
 
               {/* Notification Badge */}
@@ -248,6 +269,17 @@ const styles = StyleSheet.create({
     fontSize: 10,
     marginTop: 3,
     letterSpacing: 0.1,
+  },
+  musicBadge: {
+    position: "absolute",
+    top: -5,
+    right: -4,
+    width: 15,
+    height: 15,
+    borderRadius: 7.5,
+    borderWidth: 1.5,
+    alignItems: "center",
+    justifyContent: "center",
   },
   badge: {
     position: "absolute",
